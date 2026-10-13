@@ -44,7 +44,7 @@ body {
   letter-spacing: .02em;
   text-shadow: 0 2px 12px rgba(0,0,0,.5);
 }
-.site-header p { margin: 4px 0 0; color: var(--muted); }
+
 
 .controls {
   display: flex; flex-wrap: wrap; justify-content: center;

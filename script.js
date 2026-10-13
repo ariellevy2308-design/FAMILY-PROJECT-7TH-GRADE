@@ -4,7 +4,6 @@
   const root = document.documentElement;
 
   $("#site-title").textContent = cfg.title;
-  $("#site-subtitle").textContent = cfg.subtitle;
   document.title = cfg.title;
 
   // ---------- מידות לפי גודל המסך ----------
