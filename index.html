@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ספר התנ״ך של סבא רבא</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&family=Heebo:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1 id="site-title">ספר התנ״ך של סבא רבא</h1>
+    <p id="site-subtitle">פרויקט שורשים משפחתי</p>
+  </header>
+
+  <nav class="controls" aria-label="תפריט">
+    <button class="btn" id="btn-outside" aria-pressed="true">הספר מבחוץ</button>
+    <button class="btn" id="btn-inside" aria-pressed="false">לדפדף בספר</button>
+    <button class="btn btn-gold" id="btn-creator">דבר היוצר</button>
+  </nav>
+
+  <main class="stage">
+    <!-- תצוגה 1: הספר הסגור ב-3D, אפשר לסובב בגרירה -->
+    <section class="view view-outside active" id="view-outside" aria-label="הספר מבחוץ">
+      <div class="scene" id="scene">
+        <div class="box" id="box">
+          <div class="face front"></div>
+          <div class="face back"></div>
+          <div class="face spine"></div>
+          <div class="face fore-edge"></div>
+          <div class="face top"></div>
+          <div class="face bottom"></div>
+        </div>
+      </div>
+      <p class="hint">גררו כדי לסובב את הספר · לחצו על הספר כדי לפתוח אותו</p>
+    </section>
+
+    <!-- תצוגה 2: הספר הפתוח, מדפדפים בעמודים -->
+    <section class="view view-inside" id="view-inside" aria-label="דפדוף בספר">
+      <div class="reader">
+        <button class="nav-arrow" id="prev" aria-label="העמוד הקודם">›</button>
+        <div class="book-wrap">
+          <div class="book" id="book"></div>
+        </div>
+        <button class="nav-arrow" id="next" aria-label="העמוד הבא">‹</button>
+      </div>
+      <p class="hint" id="page-indicator"></p>
+    </section>
+  </main>
+
+  <!-- חלון "דבר היוצר" -->
+  <div class="modal" id="creator-modal" role="dialog" aria-modal="true" aria-labelledby="creator-title" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-paper">
+      <button class="modal-close" data-close aria-label="סגירה">×</button>
+      <h2 id="creator-title">דבר היוצר</h2>
+      <div id="creator-text"></div>
+      <p class="creator-name" id="creator-name"></p>
+    </div>
+  </div>
+
+  <script src="book-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
