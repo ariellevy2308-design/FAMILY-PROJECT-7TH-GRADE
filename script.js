@@ -11,10 +11,10 @@
     const arrows = innerWidth < 600 ? 80 : 130;
     const availW = Math.min(innerWidth, 1300) - 32 - arrows;
     const availH = innerHeight - 270;
-    const pw = Math.max(110, Math.min(360, availW / 2, availH / 1.45));
+    const pw = Math.max(110, Math.min(360, availW / 2, availH / 1.5));
     root.style.setProperty("--pw", pw + "px");
-    root.style.setProperty("--ph", pw * 1.45 + "px");
-    root.style.setProperty("--th", Math.max(24, pw * 0.22) + "px");
+    root.style.setProperty("--ph", pw * 1.5 + "px");
+    root.style.setProperty("--th", Math.max(26, pw * 0.3) + "px");
   }
   fitSize();
   addEventListener("resize", fitSize);
@@ -57,7 +57,9 @@
   applyImage(faces.front, cfg.outside.front);
   applyImage(faces.back, cfg.outside.back);
   applyImage(faces.spine, cfg.outside.spine);
-  applyImage(faces.edge, cfg.outside.edges);
+  applyImage(faces.edge, cfg.outside.edgeSide);
+  applyImage(faces.top, cfg.outside.edgeTop);
+  applyImage(faces.bottom, cfg.outside.edgeTop);
 
   let rotX = -12, rotY = -28, dragging = false, moved = 0, lastX = 0, lastY = 0, idleSince = performance.now();
   const scene = $("#scene");
@@ -99,7 +101,7 @@
   // ---------- הספר הפתוח ----------
   const book = $("#book");
   const pages = cfg.pages.slice();
-  if (pages.length % 2) pages.push({ text: "" });
+  if (pages.length % 2) pages.push({ text: "", blank: true });
 
   // כל דף (leaf) = צד קדמי + צד אחורי
   const leafDefs = [
@@ -131,7 +133,7 @@
       el.appendChild(text);
       const num = document.createElement("div");
       num.className = "page-num";
-      num.textContent = def.num;
+      num.textContent = def.page.text ? def.num : "";
       el.appendChild(num);
       applyImage(el, def.page.image);
     }

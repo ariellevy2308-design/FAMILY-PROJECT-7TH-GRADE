@@ -2,7 +2,7 @@
 //  הגדרות הספר — כאן מחליפים תמונות, עמודים ואת "דבר היוצר"
 // ============================================================
 //  כל תמונה שמים בתיקייה images/ ורושמים כאן את שם הקובץ.
-//  אם תמונה עוד לא קיימת (null) — האתר מציג עיצוב זמני במקומה.
+//  אם תמונה לא קיימת (null) — האתר מציג עיצוב זמני במקומה.
 // ============================================================
 
 const BOOK_CONFIG = {
@@ -10,25 +10,33 @@ const BOOK_CONFIG = {
 
   // תמונות החוץ של הספר (לתצוגת ה-3D)
   outside: {
-    front: null,   // לדוגמה: "images/cover-front.jpg"
-    back: null,    // לדוגמה: "images/cover-back.jpg"
-    spine: null,   // לדוגמה: "images/spine.jpg"
-    edges: null,   // צד הדפים (לא חובה)
+    front: "images/cover-front.jpg",
+    back: "images/cover-back.jpg",
+    spine: "images/spine.jpg",
+    edgeSide: "images/edge-v.jpg",   // צד הדפים
+    edgeTop: "images/edge-h.jpg",    // הדפים מלמעלה ומלמטה
   },
 
-  // תמונות הכריכה מבפנים (לא חובה)
-  insideFront: null, // "images/inside-front.jpg"
-  insideBack: null,  // "images/inside-back.jpg"
+  // הכריכה מבפנים
+  insideFront: "images/inside-front.jpg",
+  insideBack: "images/inside-back.jpg",
 
-  // עמודי הספר לפי הסדר. כל עמוד: תמונה או טקסט זמני.
+  // עמודי הספר לפי הסדר (ספר עברי: ימין ואז שמאל).
   // { image: "images/page-01.jpg" }   או   { text: "..." }
   pages: [
-    { text: "עמוד השער\n\n(תמונה תתווסף בקרוב)" },
-    { text: "עמוד 2\n\n(תמונה תתווסף בקרוב)" },
-    { text: "בְּרֵאשִׁית בָּרָא אֱלֹהִים\nאֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ\n\n(עמוד לדוגמה)" },
-    { text: "עמוד 4\n\n(תמונה תתווסף בקרוב)" },
-    { text: "עמוד 5\n\n(תמונה תתווסף בקרוב)" },
-    { text: "עמוד 6\n\n(תמונה תתווסף בקרוב)" },
+    { image: "images/page-01.jpg" },
+    { image: "images/page-02.jpg" },
+    { image: "images/page-03.jpg" },
+    { image: "images/page-04.jpg" },
+    { image: "images/page-05.jpg" },
+    { image: "images/page-06.jpg" },
+    { image: "images/page-07.jpg" },
+    { image: "images/page-08.jpg" },
+    { image: "images/page-09.jpg" },
+    { image: "images/page-10.jpg" },
+    { image: "images/page-11.jpg" },
+    { image: "images/page-12.jpg" },
+    { image: "images/page-13.jpg" },
   ],
 
   // הטקסט של "דבר היוצר" — כל שורה ריקה = פסקה חדשה

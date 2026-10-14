@@ -222,7 +222,8 @@ body {
   position: absolute; bottom: 4%; left: 0; right: 0; text-align: center;
   font: 400 calc(var(--pw) * .04) "Frank Ruhl Libre", serif; color: #8a7558;
 }
-.page-face.has-image .page-text { display: none; }
+.page-face.has-image .page-text, .page-face.has-image .page-num { display: none; }
+.face.has-image { box-shadow: inset 0 0 18px rgba(0,0,0,.45); }
 
 .cover-face { box-shadow: inset 0 0 0 1px rgba(0,0,0,.4); }
 .cover-face.front { border-radius: 8px 3px 3px 8px; }
