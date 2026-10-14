@@ -210,8 +210,6 @@
   // העמודים נוצרים בקוד (נייר ישן + טקסט התנ"ך), ורק הדפים שליד העמוד הנוכחי
   // קיימים בדף בכל רגע — כך גם ספר של אלפי עמודים נשאר מהיר.
   const book = $("#book");
-  const stackL = $("#stack-left");
-  const stackR = $("#stack-right");
   const bookSelect = $("#book-select");
 
   let manifest = { pages: 1, books: [] };
@@ -245,13 +243,20 @@
       return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
     };
   }
-  // הנייר של כל עמוד = טקסטורה אמיתית מהתמונות של הספר (הטקסט נמחק ממנה, הכתמים נשארו)
-  const PAPER_COUNT = 12;
   function agedPaper(el, pageNo) {
     const r = rand(pageNo + 7);
-    const k = 1 + Math.floor(r() * PAPER_COUNT);
-    el.style.backgroundImage = `url("images/paper/paper-${k}.jpg")`;
-    el.style.backgroundSize = "100% 100%";
+    const layers = [];
+    const stains = 3 + Math.floor(r() * 4);
+    for (let i = 0; i < stains; i++) {
+      const x = Math.round(r() * 100), y = Math.round(r() * 100);
+      const s = Math.round(7 + r() * 26), a = (0.07 + r() * 0.17).toFixed(2);
+      layers.push(`radial-gradient(circle at ${x}% ${y}%, rgba(150,95,30,${a}) 0, rgba(150,95,30,${(a / 2).toFixed(2)}) ${s * 0.6}%, transparent ${s}%)`);
+    }
+    for (let i = 0; i < 6; i++) { // נקודות "פוקסינג" קטנות
+      const x = Math.round(r() * 100), y = Math.round(r() * 100);
+      layers.push(`radial-gradient(circle at ${x}% ${y}%, rgba(130,80,30,.22) 0, transparent ${(0.6 + r()).toFixed(1)}%)`);
+    }
+    el.style.backgroundImage = layers.join(",") + ", var(--paper-base)";
   }
 
   function bookForPage(p) {
@@ -334,15 +339,6 @@
     leafEls.set(i, leaf);
   }
 
-  function setStack(el, count, dir) {
-    const T = Math.round(Math.min(1, count / Math.max(1, n - 2)) * 14);
-    const sh = [];
-    for (let j = 1; j <= T; j++) sh.push(`${dir * j * 0.45}px ${j * 0.55}px 0 ${j % 2 ? "#e6d6b4" : "#bfa77b"}`);
-    if (T) sh.push(`${dir * T * 0.45 + dir * 2}px ${T * 0.55 + 4}px 8px rgba(0,0,0,.35)`);
-    el.style.boxShadow = sh.join(",") || "none";
-    el.style.visibility = count > 0 && current > 0 && current < n ? "visible" : "hidden";
-  }
-
   function render() {
     const want = new Set([0, n - 1]);
     for (let i = current - WINDOW; i <= current + WINDOW; i++) if (i > 0 && i < n - 1) want.add(i);
@@ -354,9 +350,6 @@
         setTimeout(() => leaf.remove(), 1100); // אחרי שהאנימציה נגמרת
       }
     });
-
-    setStack(stackL, n - 1 - Math.max(current, 1), -1);
-    setStack(stackR, Math.min(current - 1, n - 2), 1);
 
     book.classList.toggle("closed-start", current === 0);
     book.classList.toggle("closed-end", current === n);

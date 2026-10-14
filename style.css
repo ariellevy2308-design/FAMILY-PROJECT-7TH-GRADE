@@ -296,29 +296,22 @@ body {
 .leaf.cover .page-face::after { display: none; }
 .leaf.cover .page-face.front.inside-cover, .leaf.cover .page-face.back.inside-cover { box-shadow: inset 0 0 0 3px #8a7440, inset 0 0 0 5px #3b2a14, inset 0 0 30px rgba(0,0,0,.6); }
 
-.stack {
-  position: absolute; top: 0; left: 0; width: var(--pw); height: var(--ph);
-  background: #e9dbb9; border-radius: 4px 0 0 4px;
-  transform: translateZ(.2px); pointer-events: none;
-}
-.stack.right { left: var(--pw); border-radius: 0 4px 4px 0; }
 
 .gen-page { color: #1c1209; }
 .gen-page.page-face { background-color: #e9d6ad; }
 /* גרעיניות של נייר ישן */
 .gen-page::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .18; mix-blend-mode: multiply;
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5; mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .4 0 0 0 0 .2 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 /* קצוות שהשחימו עם השנים */
-.gen-page.page-face.front { box-shadow: inset 0 0 calc(var(--pw) * .015) rgba(110,65,15,.45), inset 0 0 calc(var(--pw) * .08) rgba(150,95,30,.3); }
-.gen-page.page-face.back  { box-shadow: inset 0 0 calc(var(--pw) * .015) rgba(110,65,15,.45), inset 0 0 calc(var(--pw) * .08) rgba(150,95,30,.3); }
+.gen-page.page-face.front { box-shadow: inset 0 0 calc(var(--pw) * .02) rgba(110,65,15,.55), inset 0 0 calc(var(--pw) * .13) rgba(150,95,30,.5); }
+.gen-page.page-face.back  { box-shadow: inset 0 0 calc(var(--pw) * .02) rgba(110,65,15,.55), inset 0 0 calc(var(--pw) * .13) rgba(150,95,30,.5); }
 .run-head {
   position: absolute; top: 3.6%; left: 6%; right: 6%;
   display: flex; justify-content: center; align-items: baseline;
   font: 700 calc(var(--pw) * .062) "Frank Ruhl Libre", serif;
   text-shadow: 0 0 .5px rgba(28,18,9,.7);
-  mix-blend-mode: multiply;
 }
 .run-head .pnum { position: absolute; font-weight: 900; font-size: 1.12em; }
 .page-face.back .run-head .pnum { right: 0; }   /* עמוד ימני — מספר בפינה הימנית */
@@ -330,7 +323,6 @@ body {
   font-size: calc(var(--pw) * .054); line-height: 1.24;
   text-align: justify; text-align-last: right;
   text-shadow: 0 0 .6px rgba(28,18,9,.55); /* דיו שנספג בנייר */
-  mix-blend-mode: multiply;
 }
 .page-body p { margin: 0; }
 .page-body .vn { font-weight: 700; font-size: .7em; margin-inline-end: .2em; }
