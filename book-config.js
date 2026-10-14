@@ -17,9 +17,9 @@ const BOOK_CONFIG = {
     edgeTop: "images/edge-h.jpg",    // הדפים מלמעלה ומלמטה
   },
 
-  // הכריכה מבפנים
-  insideFront: "images/inside-front.jpg",
-  insideBack: "images/inside-back.jpg",
+  // הכריכה מבפנים — null = עיצוב שנוצר בקוד בהשראת הספר (בטנה חומה ומסגרת פליז)
+  insideFront: null,
+  insideBack: null,
 
   // עמודי הספר נוצרים אוטומטית מטקסט התנ"ך (תיקייה data/, נבנית ע"י tools/build_text.py)
 
