@@ -41,27 +41,132 @@
     </div>`;
 
   // ---------- הספר הסגור ב-3D ----------
+  // הספר בנוי מחלקים אמיתיים: שתי כריכות עבות שבולטות מעבר לדפים, גוש דפים,
+  // ושדרה מעוגלת. החלקים המובלטים בכריכה (מסגרת, כתר, לוחות, אבנים) "מורמים"
+  // מעל המשטח, כך שהם זזים ביחס לרקע כשמסובבים את הספר.
   const box = $("#box");
-  const faces = {
-    front: box.querySelector(".front"),
-    back: box.querySelector(".back"),
-    spine: box.querySelector(".spine"),
-    edge: box.querySelector(".fore-edge"),
-    top: box.querySelector(".top"),
-    bottom: box.querySelector(".bottom"),
+  const IMG_W = 640, IMG_H = 960; // גודל תמונות הכריכה
+
+  // אזורים מובלטים בתמונת הכריכה (בפיקסלים של התמונה) וכמה הם בולטים
+  const rect = (x1, y1, x2, y2) => [[x1, y1], [x2, y1], [x2, y2], [x1, y2]];
+  const ellipse = (cx, cy, rx, ry, n = 28) =>
+    Array.from({ length: n }, (_, i) => [cx + rx * Math.cos((i / n) * 2 * Math.PI), cy + ry * Math.sin((i / n) * 2 * Math.PI)]);
+  const arch = (x1, x2, yTop, yBottom) => {
+    const r = (x2 - x1) / 2, cx = x1 + r, cy = yTop + r, pts = [[x1, yBottom]];
+    for (let i = 0; i <= 14; i++) { const t = Math.PI + (i / 14) * Math.PI; pts.push([cx + r * Math.cos(t), cy + r * Math.sin(t)]); }
+    pts.push([x2, yBottom]);
+    return pts;
   };
-  faces.front.classList.add("leather");
-  faces.front.innerHTML = coverArt();
-  faces.back.classList.add("leather");
-  faces.spine.classList.add("leather");
-  faces.spine.innerHTML = `<div class="spine-title">תנ״ך</div>`;
-  [faces.edge, faces.top, faces.bottom].forEach((f) => f.classList.add("pages-edge"));
-  applyImage(faces.front, cfg.outside.front);
-  applyImage(faces.back, cfg.outside.back);
-  applyImage(faces.spine, cfg.outside.spine);
-  applyImage(faces.edge, cfg.outside.edgeSide);
-  applyImage(faces.top, cfg.outside.edgeTop);
-  applyImage(faces.bottom, cfg.outside.edgeTop);
+  const RELIEF = {
+    front: [
+      { frame: [92, 92, 545, 868], h: 2 },
+      { pts: ellipse(152, 158, 36, 43), h: 5, gem: true },
+      { pts: ellipse(478, 160, 40, 40), h: 2.5 },
+      { pts: ellipse(146, 800, 41, 41), h: 2.5 },
+      { pts: ellipse(470, 805, 40, 40), h: 2.5 },
+      { pts: [[203, 245], [212, 212], [250, 196], [292, 178], [318, 160], [344, 178], [386, 196], [424, 212], [434, 245], [420, 285], [398, 300], [400, 360], [238, 360], [240, 300], [216, 285]], h: 3.5 },
+      { pts: [...arch(143, 312, 388, 742), ...arch(320, 484, 392, 742)], h: 3 },
+    ],
+    back: [
+      { frame: [98, 92, 532, 862], h: 2 },
+      { pts: [[186, 268], [458, 268], [458, 412], [372, 424], [348, 462], [344, 492], [378, 522], [378, 548], [442, 606], [442, 638], [218, 638], [218, 606], [270, 550], [272, 522], [298, 492], [294, 462], [268, 428], [218, 432], [186, 412]], h: 3 },
+    ],
+  };
+  const pct = (pts) => pts.map(([x, y]) => `${(x / IMG_W * 100).toFixed(2)}% ${(y / IMG_H * 100).toFixed(2)}%`).join(",");
+
+  function addRelief(faceEl, src, which, W) {
+    const k = W / 280; // הבלטה יחסית לגודל הספר
+    for (const f of RELIEF[which]) {
+      let clip;
+      if (f.frame) {
+        const r = rect(...f.frame);
+        clip = `polygon(evenodd, 0 0, 100% 0, 100% 100%, 0 100%, 0 0, ${pct(r)}, ${pct([r[0]])})`;
+      } else {
+        clip = `polygon(${pct(f.pts)})`;
+      }
+      const h = f.h * k, steps = 4;
+      for (let i = 1; i <= steps; i++) { // שכבות "דופן" כהות יוצרות עובי
+        const layer = document.createElement("div");
+        layer.className = "relief" + (i === steps ? " top" : " wall") + (i === steps && f.gem ? " gem" : "");
+        layer.style.clipPath = clip;
+        layer.style.transform = `translateZ(${(h * i / steps).toFixed(2)}px)`;
+        if (i === steps) layer.style.backgroundImage = `url("${src}")`;
+        faceEl.appendChild(layer);
+      }
+    }
+    const glint = document.createElement("div");
+    glint.className = "glint";
+    glint.style.transform = `translateZ(${(6 * k).toFixed(2)}px)`;
+    faceEl.appendChild(glint);
+  }
+
+  function buildBox() {
+    const W = parseFloat(getComputedStyle(root).getPropertyValue("--pw"));
+    const H = W * 1.5, D = Math.max(26, W * 0.3);
+    const tb = Math.max(3, W * 0.024);  // עובי הכריכה
+    const ins = Math.max(3, W * 0.03);  // כמה הדפים שקועים פנימה
+    const bulge = D * 0.16;             // כמה השדרה מעוגלת
+    box.innerHTML = "";
+    const face = (w, h, x, y, z, rot, cls) => {
+      const el = document.createElement("div");
+      el.className = "bf " + cls;
+      el.style.width = w + "px"; el.style.height = h + "px";
+      el.style.left = (W - w) / 2 + "px"; el.style.top = (H - h) / 2 + "px";
+      el.style.transform = `translate3d(${x}px, ${y}px, ${z}px) ${rot}`;
+      box.appendChild(el);
+      return el;
+    };
+
+    // כריכה קדמית
+    const front = face(W, H, 0, 0, D / 2, "", "cover");
+    front.style.backgroundImage = `url("${cfg.outside.front}")`;
+    addRelief(front, cfg.outside.front, "front", W);
+    face(W, tb, 0, -H / 2, D / 2 - tb / 2, "rotateX(90deg)", "brass");
+    face(W, tb, 0, H / 2, D / 2 - tb / 2, "rotateX(-90deg)", "brass");
+    face(tb, H, -W / 2, 0, D / 2 - tb / 2, "rotateY(-90deg)", "brass");
+    face(W, H, 0, 0, D / 2 - tb, "rotateY(180deg)", "board-inner");
+
+    // כריכה אחורית
+    const back = face(W, H, 0, 0, -D / 2, "rotateY(180deg)", "cover");
+    back.style.backgroundImage = `url("${cfg.outside.back}")`;
+    addRelief(back, cfg.outside.back, "back", W);
+    face(W, tb, 0, -H / 2, -D / 2 + tb / 2, "rotateX(90deg)", "brass");
+    face(W, tb, 0, H / 2, -D / 2 + tb / 2, "rotateX(-90deg)", "brass");
+    face(tb, H, -W / 2, 0, -D / 2 + tb / 2, "rotateY(-90deg)", "brass");
+    face(W, H, 0, 0, -D / 2 + tb, "", "board-inner");
+
+    // גוש הדפים (שקוע מעט מהכריכות)
+    const P = D - 2 * tb - 0.6;
+    face(P, H - 2 * ins, -W / 2 + ins, 0, 0, "rotateY(-90deg)", "pages").style.backgroundImage = `url("${cfg.outside.edgeSide}")`;
+    face(W - ins, P, ins / 2, -H / 2 + ins, 0, "rotateX(90deg)", "pages").style.backgroundImage = `url("${cfg.outside.edgeTop}")`;
+    face(W - ins, P, ins / 2, H / 2 - ins, 0, "rotateX(-90deg)", "pages").style.backgroundImage = `url("${cfg.outside.edgeTop}")`;
+
+    // שדרה מעוגלת — רצועות צרות לאורך קשת
+    const N = 12, pts = [];
+    for (let i = 0; i <= N; i++) {
+      const t = Math.PI / 2 - (i / N) * Math.PI;
+      pts.push([W / 2 + bulge * Math.cos(t), (D / 2) * Math.sin(t)]);
+    }
+    const lens = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]));
+    const total = lens.reduce((a, b) => a + b, 0);
+    let off = 0;
+    lens.forEach((len, i) => {
+      const [x1, z1] = pts[i], [x2, z2] = pts[i + 1];
+      // כיוון הנורמל החוצה (dz, -dx) => rotateY(atan2(nx, nz))
+      const nx = z1 - z2, nz = x2 - x1;
+      const seg = face(len + 0.6, H, (x1 + x2) / 2, 0, (z1 + z2) / 2, `rotateY(${Math.atan2(nx, nz)}rad)`, "spine-seg");
+      seg.style.backgroundImage = `url("${cfg.outside.spine}")`;
+      seg.style.backgroundSize = `${total}px ${H}px`;
+      seg.style.backgroundPosition = `${-off}px 0`;
+      seg.style.filter = `brightness(${(0.75 + 0.35 * Math.cos(((i + 0.5) / N - 0.5) * Math.PI)).toFixed(2)})`;
+      off += len;
+    });
+    // מכסים קטנים בקצות השדרה
+    face(bulge, D, W / 2 + bulge / 2, -H / 2, 0, "rotateX(90deg)", "spine-cap");
+    face(bulge, D, W / 2 + bulge / 2, H / 2, 0, "rotateX(-90deg)", "spine-cap");
+  }
+  buildBox();
+  addEventListener("resize", buildBox);
 
   let rotX = -12, rotY = -28, dragging = false, moved = 0, lastX = 0, lastY = 0, idleSince = performance.now();
   const scene = $("#scene");
@@ -96,6 +201,7 @@
       rotX += (-12 + Math.sin(t / 1800) * 6 - rotX) * 0.02;
     }
     box.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    box.style.setProperty("--gl", (50 + Math.sin(rotY * Math.PI / 180) * 70).toFixed(1) + "%");
     requestAnimationFrame(animateBox);
   }
   requestAnimationFrame(animateBox);
