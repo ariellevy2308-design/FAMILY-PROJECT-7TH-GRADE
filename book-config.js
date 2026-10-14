@@ -12,7 +12,7 @@ const BOOK_CONFIG = {
   outside: {
     front: "images/cover-front.jpg",
     back: "images/cover-back.jpg",
-    spine: "images/spine.jpg",
+    spine: "images/spine.jpg?v=2",
     edgeSide: "images/edge-v.jpg",   // צד הדפים
     edgeTop: "images/edge-h.jpg",    // הדפים מלמעלה ומלמטה
   },
