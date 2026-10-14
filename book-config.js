@@ -21,23 +21,7 @@ const BOOK_CONFIG = {
   insideFront: "images/inside-front.jpg",
   insideBack: "images/inside-back.jpg",
 
-  // עמודי הספר לפי הסדר (ספר עברי: ימין ואז שמאל).
-  // { image: "images/page-01.jpg" }   או   { text: "..." }
-  pages: [
-    { image: "images/page-01.jpg" },
-    { image: "images/page-02.jpg" },
-    { image: "images/page-03.jpg" },
-    { image: "images/page-04.jpg" },
-    { image: "images/page-05.jpg" },
-    { image: "images/page-06.jpg" },
-    { image: "images/page-07.jpg" },
-    { image: "images/page-08.jpg" },
-    { image: "images/page-09.jpg" },
-    { image: "images/page-10.jpg" },
-    { image: "images/page-11.jpg" },
-    { image: "images/page-12.jpg" },
-    { image: "images/page-13.jpg" },
-  ],
+  // עמודי הספר נוצרים אוטומטית מטקסט התנ"ך (תיקייה data/, נבנית ע"י tools/build_text.py)
 
   // הטקסט של "דבר היוצר" — כל שורה ריקה = פסקה חדשה
   creatorNote: `

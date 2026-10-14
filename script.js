@@ -8,10 +8,12 @@
 
   // ---------- מידות לפי גודל המסך ----------
   function fitSize() {
-    const arrows = innerWidth < 600 ? 80 : 130;
-    const availW = Math.min(innerWidth, 1300) - 32 - arrows;
-    const availH = innerHeight - 270;
-    const pw = Math.max(110, Math.min(360, availW / 2, availH / 1.5));
+    const vw = document.documentElement.clientWidth;
+    const mobile = vw < 600;
+    const availW = Math.min(vw, 1300) - (mobile ? 24 : 32 + 130);
+    const availH = innerHeight - 290;
+    // ההטיה בתלת־ממד מרחיבה את החלק התחתון של הספר — משאירים לזה מקום
+    const pw = Math.max(90, Math.min(360, availW / (mobile ? 2.3 : 2.12), availH / 1.6));
     root.style.setProperty("--pw", pw + "px");
     root.style.setProperty("--ph", pw * 1.5 + "px");
     root.style.setProperty("--th", Math.max(26, pw * 0.3) + "px");
@@ -99,65 +101,164 @@
   requestAnimationFrame(animateBox);
 
   // ---------- הספר הפתוח ----------
+  // העמודים נוצרים בקוד (נייר ישן + טקסט התנ"ך), ורק הדפים שליד העמוד הנוכחי
+  // קיימים בדף בכל רגע — כך גם ספר של אלפי עמודים נשאר מהיר.
   const book = $("#book");
-  const pages = cfg.pages.slice();
-  if (pages.length % 2) pages.push({ text: "", blank: true });
+  const stackL = $("#stack-left");
+  const stackR = $("#stack-right");
+  const bookSelect = $("#book-select");
 
-  // כל דף (leaf) = צד קדמי + צד אחורי
-  const leafDefs = [
-    [{ kind: "cover-front" }, { kind: "inside", src: cfg.insideFront }],
-  ];
-  for (let i = 0; i < pages.length; i += 2) {
-    leafDefs.push([{ kind: "page", page: pages[i], num: i + 1 }, { kind: "page", page: pages[i + 1], num: i + 2 }]);
+  let manifest = { pages: 1, books: [] };
+  let totalPages = 2;          // כולל עמוד השער, תמיד זוגי
+  let n = 3;                   // מספר הדפים (leaves) כולל שתי הכריכות
+  let current = 0;             // כמה דפים כבר הופכו
+  const leafEls = new Map();
+  const bookCache = new Map();
+  const WINDOW = 3;
+
+  const ones = "אבגדהוזחט", tens = "יכלמנסעפצ", hundreds = "קרשת";
+  function hebNum(num) {
+    let s = "";
+    if (num >= 1000) { s = hebNum(Math.floor(num / 1000)) + "׳"; num %= 1000; }
+    while (num >= 400) { s += "ת"; num -= 400; }
+    if (num >= 100) { s += hundreds[Math.floor(num / 100) - 1]; num %= 100; }
+    if (num === 15) return s + "טו";
+    if (num === 16) return s + "טז";
+    if (num >= 10) { s += tens[Math.floor(num / 10) - 1]; num %= 10; }
+    if (num) s += ones[num - 1];
+    return s;
   }
-  leafDefs.push([{ kind: "inside", src: cfg.insideBack }, { kind: "cover-back" }]);
 
-  function buildFace(def, side) {
+  // מספר אקראי קבוע לכל עמוד — כדי שהכתמים יהיו תמיד באותו מקום
+  function rand(seed) {
+    let t = seed * 2654435761 >>> 0;
+    return () => {
+      t += 0x6D2B79F5;
+      let r = Math.imul(t ^ (t >>> 15), 1 | t);
+      r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
+      return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function agedPaper(el, pageNo) {
+    const r = rand(pageNo + 7);
+    const layers = [];
+    const stains = 3 + Math.floor(r() * 4);
+    for (let i = 0; i < stains; i++) {
+      const x = Math.round(r() * 100), y = Math.round(r() * 100);
+      const s = Math.round(7 + r() * 26), a = (0.07 + r() * 0.17).toFixed(2);
+      layers.push(`radial-gradient(circle at ${x}% ${y}%, rgba(150,95,30,${a}) 0, rgba(150,95,30,${(a / 2).toFixed(2)}) ${s * 0.6}%, transparent ${s}%)`);
+    }
+    for (let i = 0; i < 6; i++) { // נקודות "פוקסינג" קטנות
+      const x = Math.round(r() * 100), y = Math.round(r() * 100);
+      layers.push(`radial-gradient(circle at ${x}% ${y}%, rgba(130,80,30,.22) 0, transparent ${(0.6 + r()).toFixed(1)}%)`);
+    }
+    el.style.backgroundImage = layers.join(",") + ", var(--paper-base)";
+  }
+
+  function bookForPage(p) {
+    return manifest.books.find((b) => p >= b.start && p < b.start + b.count);
+  }
+  function loadBook(b) {
+    if (!bookCache.has(b.file)) {
+      bookCache.set(b.file, fetch("data/" + b.file).then((r) => r.json()));
+    }
+    return bookCache.get(b.file);
+  }
+
+  function fillPage(el, p) {
+    agedPaper(el, p);
+    el.classList.add("gen-page");
+    const head = document.createElement("div");
+    head.className = "run-head";
+    const body = document.createElement("div");
+    body.className = "page-body";
+    el.append(head, body);
+
+    if (p === 1) { // עמוד השער
+      el.classList.add("title-page");
+      body.innerHTML = `
+        <div class="tp-frame">
+          <div class="tp-small">סֵפֶר</div>
+          <div class="tp-big">תּוֹרָה<br>נְבִיאִים<br>וּכְתוּבִים</div>
+          <div class="orn"></div>
+          <div class="tp-small">מְדֻיָּק הֵיטֵב</div>
+        </div>`;
+      return;
+    }
+    const b = bookForPage(p);
+    if (!b) return; // עמוד ריק בסוף
+    head.innerHTML = `<span class="pnum">${hebNum(p)}</span><span class="rh">${b.he}</span>`;
+    loadBook(b).then((pages) => {
+      const items = pages[p - b.start] || [];
+      let html = "", open = false;
+      const openP = () => { if (!open) { html += "<p>"; open = true; } };
+      const closeP = () => { if (open) { html += "</p>"; open = false; } };
+      for (const it of items) {
+        if (it[0] === "t") { closeP(); html += `<div class="book-title"><div class="orn"></div><h3>סֵפֶר ${it[1]}</h3><div class="orn"></div></div>`; }
+        else if (it[0] === "c") { closeP(); html += `<div class="chap">פרק ${it[1]}</div>`; }
+        else if (it[0] === "v") { openP(); html += `<span class="vn">${it[1]}</span>${it[2]} `; }
+        else { openP(); html += `${it[1]} `; }
+      }
+      closeP();
+      body.innerHTML = html;
+    });
+  }
+
+  function buildFace(i, side) {
     const el = document.createElement("div");
     el.className = `page-face ${side}`;
-    if (def.kind === "cover-front") {
-      el.classList.add("cover-face", "leather");
-      el.innerHTML = coverArt();
-      applyImage(el, cfg.outside.front);
-    } else if (def.kind === "cover-back") {
-      el.classList.add("cover-face", "leather");
-      applyImage(el, cfg.outside.back);
-    } else if (def.kind === "inside") {
-      el.classList.add("cover-face", "inside-cover");
-      applyImage(el, def.src);
-    } else {
-      el.classList.add("paper");
-      const text = document.createElement("div");
-      text.className = "page-text";
-      text.textContent = def.page.text || "";
-      el.appendChild(text);
-      const num = document.createElement("div");
-      num.className = "page-num";
-      num.textContent = def.page.text ? def.num : "";
-      el.appendChild(num);
-      applyImage(el, def.page.image);
-    }
+    if (i === 0 && side === "front") { el.classList.add("cover-face", "leather"); el.innerHTML = coverArt(); applyImage(el, cfg.outside.front); }
+    else if (i === 0) { el.classList.add("cover-face", "inside-cover"); applyImage(el, cfg.insideFront); }
+    else if (i === n - 1 && side === "front") { el.classList.add("cover-face", "inside-cover"); applyImage(el, cfg.insideBack); }
+    else if (i === n - 1) { el.classList.add("cover-face", "leather"); applyImage(el, cfg.outside.back); }
+    else fillPage(el, side === "front" ? 2 * i - 1 : 2 * i);
     return el;
   }
 
-  const leaves = leafDefs.map(([front, back]) => {
-    const leaf = document.createElement("div");
-    leaf.className = "leaf";
-    leaf.appendChild(buildFace(front, "front"));
-    leaf.appendChild(buildFace(back, "back"));
-    book.appendChild(leaf);
-    return leaf;
-  });
+  function leafTransform(i) {
+    const flipped = i < current;
+    let z;
+    if (i === 0 || i === n - 1) z = 0;
+    else z = Math.max(1, 12 - (flipped ? current - 1 - i : i - current)) * 0.6;
+    return `translateZ(${z}px) rotateY(${flipped ? 180 : 0}deg)`;
+  }
 
-  const n = leaves.length;
-  let current = 0; // כמה דפים כבר הופכו
+  function createLeaf(i) {
+    const leaf = document.createElement("div");
+    leaf.className = "leaf" + (i === 0 || i === n - 1 ? " cover" : "");
+    leaf.append(buildFace(i, "front"), buildFace(i, "back"));
+    leaf.style.transition = "none";
+    leaf.style.transform = leafTransform(i);
+    book.appendChild(leaf);
+    leaf.getBoundingClientRect();
+    leaf.style.transition = "";
+    leafEls.set(i, leaf);
+  }
+
+  function setStack(el, count, dir) {
+    const T = Math.round(Math.min(1, count / Math.max(1, n - 2)) * 14);
+    const sh = [];
+    for (let j = 1; j <= T; j++) sh.push(`${dir * j * 0.45}px ${j * 0.55}px 0 ${j % 2 ? "#e6d6b4" : "#bfa77b"}`);
+    if (T) sh.push(`${dir * T * 0.45 + dir * 2}px ${T * 0.55 + 4}px 8px rgba(0,0,0,.35)`);
+    el.style.boxShadow = sh.join(",") || "none";
+    el.style.visibility = count > 0 && current > 0 && current < n ? "visible" : "hidden";
+  }
 
   function render() {
-    leaves.forEach((leaf, i) => {
-      const flipped = i < current;
-      const z = (flipped ? i : n - i) * 0.5;
-      leaf.style.transform = `translateZ(${z}px) rotateY(${flipped ? 180 : 0}deg)`;
+    const want = new Set([0, n - 1]);
+    for (let i = current - WINDOW; i <= current + WINDOW; i++) if (i > 0 && i < n - 1) want.add(i);
+    want.forEach((i) => { if (!leafEls.has(i)) createLeaf(i); });
+    leafEls.forEach((leaf, i) => {
+      leaf.style.transform = leafTransform(i);
+      if (!want.has(i)) {
+        leafEls.delete(i);
+        setTimeout(() => leaf.remove(), 1100); // אחרי שהאנימציה נגמרת
+      }
     });
+
+    setStack(stackL, n - 1 - Math.max(current, 1), -1);
+    setStack(stackR, Math.min(current - 1, n - 2), 1);
+
     book.classList.toggle("closed-start", current === 0);
     book.classList.toggle("closed-end", current === n);
     $("#prev").disabled = current === 0;
@@ -166,10 +267,21 @@
     let label;
     if (current === 0) label = "הכריכה הקדמית · לחצו כדי לפתוח";
     else if (current === n) label = "הכריכה האחורית";
-    else if (current === 1) label = "עמוד 1";
-    else if (current === n - 1) label = `עמוד ${pages.length}`;
-    else label = `עמודים ${(current - 1) * 2} ו־${(current - 1) * 2 + 1}`;
-    $("#page-indicator").textContent = `${label}  ·  מתוך ${cfg.pages.length} עמודים`;
+    else if (current === 1) label = "עמוד השער";
+    else {
+      const r = 2 * (current - 1), l = r + 1;
+      const b = bookForPage(r) || bookForPage(l);
+      label = `עמודים ${r}–${l} מתוך ${totalPages}` + (b ? ` · ${b.he}` : "");
+      if (b && bookSelect.value !== b.file) bookSelect.value = b.file;
+    }
+    $("#page-indicator").textContent = label;
+  }
+
+  function jumpTo(leaf) {
+    leafEls.forEach((el) => el.remove());
+    leafEls.clear();
+    current = Math.max(0, Math.min(n, leaf));
+    render();
   }
 
   const next = () => { if (current < n) { current++; render(); } };
@@ -177,6 +289,11 @@
 
   $("#next").addEventListener("click", next);
   $("#prev").addEventListener("click", prev);
+  bookSelect.addEventListener("change", () => {
+    const b = manifest.books.find((x) => x.file === bookSelect.value);
+    if (b) jumpTo(Math.floor(b.start / 2) + 1);
+    bookSelect.blur(); // כדי שהחיצים במקלדת ידפדפו ולא יחליפו ספר
+  });
 
   // לחיצה על הצד השמאלי = קדימה, הצד הימני = אחורה (כמו בספר עברי). אפשר גם להחליק.
   let startX = null;
@@ -190,6 +307,14 @@
     if (current === n) return prev();
     const r = book.getBoundingClientRect();
     e.clientX < r.left + r.width / 2 ? next() : prev();
+  });
+
+  fetch("data/manifest.json").then((r) => r.json()).then((m) => {
+    manifest = m;
+    totalPages = m.pages + (m.pages % 2);
+    n = totalPages / 2 + 2;
+    bookSelect.innerHTML = m.books.map((b) => `<option value="${b.file}">${b.he}</option>`).join("");
+    jumpTo(current);
   });
 
   // ---------- מעבר בין התצוגות ----------
@@ -232,7 +357,7 @@
 
   addEventListener("keydown", (e) => {
     if (!modal.hidden) { if (e.key === "Escape") closeModal(); return; }
-    if (!$("#view-inside").classList.contains("active")) return;
+    if (!$("#view-inside").classList.contains("active") || e.target.tagName === "SELECT") return;
     if (e.key === "ArrowLeft") next();
     if (e.key === "ArrowRight") prev();
   });

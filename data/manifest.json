@@ -1,0 +1,240 @@
+{
+ "source": "Miqra according to the Masorah (CC-BY-SA), via Sefaria",
+ "books": [
+  {
+   "he": "בראשית",
+   "file": "01.json",
+   "start": 2,
+   "count": 169
+  },
+  {
+   "he": "שמות",
+   "file": "02.json",
+   "start": 171,
+   "count": 137
+  },
+  {
+   "he": "ויקרא",
+   "file": "03.json",
+   "start": 308,
+   "count": 96
+  },
+  {
+   "he": "במדבר",
+   "file": "04.json",
+   "start": 404,
+   "count": 137
+  },
+  {
+   "he": "דברים",
+   "file": "05.json",
+   "start": 541,
+   "count": 118
+  },
+  {
+   "he": "יהושע",
+   "file": "06.json",
+   "start": 659,
+   "count": 84
+  },
+  {
+   "he": "שופטים",
+   "file": "07.json",
+   "start": 743,
+   "count": 83
+  },
+  {
+   "he": "שמואל א",
+   "file": "08.json",
+   "start": 826,
+   "count": 110
+  },
+  {
+   "he": "שמואל ב",
+   "file": "09.json",
+   "start": 936,
+   "count": 91
+  },
+  {
+   "he": "מלכים א",
+   "file": "10.json",
+   "start": 1027,
+   "count": 107
+  },
+  {
+   "he": "מלכים ב",
+   "file": "11.json",
+   "start": 1134,
+   "count": 101
+  },
+  {
+   "he": "ישעיהו",
+   "file": "12.json",
+   "start": 1235,
+   "count": 148
+  },
+  {
+   "he": "ירמיהו",
+   "file": "13.json",
+   "start": 1383,
+   "count": 181
+  },
+  {
+   "he": "יחזקאל",
+   "file": "14.json",
+   "start": 1564,
+   "count": 160
+  },
+  {
+   "he": "הושע",
+   "file": "15.json",
+   "start": 1724,
+   "count": 22
+  },
+  {
+   "he": "יואל",
+   "file": "16.json",
+   "start": 1746,
+   "count": 9
+  },
+  {
+   "he": "עמוס",
+   "file": "17.json",
+   "start": 1755,
+   "count": 18
+  },
+  {
+   "he": "עובדיה",
+   "file": "18.json",
+   "start": 1773,
+   "count": 3
+  },
+  {
+   "he": "יונה",
+   "file": "19.json",
+   "start": 1776,
+   "count": 7
+  },
+  {
+   "he": "מיכה",
+   "file": "20.json",
+   "start": 1783,
+   "count": 13
+  },
+  {
+   "he": "נחום",
+   "file": "21.json",
+   "start": 1796,
+   "count": 6
+  },
+  {
+   "he": "חבקוק",
+   "file": "22.json",
+   "start": 1802,
+   "count": 7
+  },
+  {
+   "he": "צפניה",
+   "file": "23.json",
+   "start": 1809,
+   "count": 7
+  },
+  {
+   "he": "חגי",
+   "file": "24.json",
+   "start": 1816,
+   "count": 6
+  },
+  {
+   "he": "זכריה",
+   "file": "25.json",
+   "start": 1822,
+   "count": 28
+  },
+  {
+   "he": "מלאכי",
+   "file": "26.json",
+   "start": 1850,
+   "count": 8
+  },
+  {
+   "he": "תהלים",
+   "file": "27.json",
+   "start": 1858,
+   "count": 190
+  },
+  {
+   "he": "משלי",
+   "file": "28.json",
+   "start": 2048,
+   "count": 63
+  },
+  {
+   "he": "איוב",
+   "file": "29.json",
+   "start": 2111,
+   "count": 76
+  },
+  {
+   "he": "שיר השירים",
+   "file": "30.json",
+   "start": 2187,
+   "count": 12
+  },
+  {
+   "he": "רות",
+   "file": "31.json",
+   "start": 2199,
+   "count": 12
+  },
+  {
+   "he": "איכה",
+   "file": "32.json",
+   "start": 2211,
+   "count": 14
+  },
+  {
+   "he": "קהלת",
+   "file": "33.json",
+   "start": 2225,
+   "count": 25
+  },
+  {
+   "he": "אסתר",
+   "file": "34.json",
+   "start": 2250,
+   "count": 27
+  },
+  {
+   "he": "דניאל",
+   "file": "35.json",
+   "start": 2277,
+   "count": 53
+  },
+  {
+   "he": "עזרא",
+   "file": "36.json",
+   "start": 2330,
+   "count": 35
+  },
+  {
+   "he": "נחמיה",
+   "file": "37.json",
+   "start": 2365,
+   "count": 48
+  },
+  {
+   "he": "דברי הימים א",
+   "file": "38.json",
+   "start": 2413,
+   "count": 97
+  },
+  {
+   "he": "דברי הימים ב",
+   "file": "39.json",
+   "start": 2510,
+   "count": 116
+  }
+ ],
+ "pages": 2625
+}
