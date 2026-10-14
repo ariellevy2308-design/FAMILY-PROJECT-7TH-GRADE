@@ -312,8 +312,8 @@
     const el = document.createElement("div");
     el.className = `page-face ${side}`;
     if (i === 0 && side === "front") { el.classList.add("cover-face", "leather"); el.innerHTML = coverArt(); applyImage(el, cfg.outside.front); }
-    else if (i === 0) { el.classList.add("cover-face", "inside-cover"); applyImage(el, cfg.insideFront); }
-    else if (i === n - 1 && side === "front") { el.classList.add("cover-face", "inside-cover"); applyImage(el, cfg.insideBack); }
+    else if (i === 0) { el.classList.add("cover-face", "inside-cover"); agedPaper(el, 90001); applyImage(el, cfg.insideFront); }
+    else if (i === n - 1 && side === "front") { el.classList.add("cover-face", "inside-cover"); agedPaper(el, 90002); applyImage(el, cfg.insideBack); }
     else if (i === n - 1) { el.classList.add("cover-face", "leather"); applyImage(el, cfg.outside.back); }
     else fillPage(el, side === "front" ? 2 * i - 1 : 2 * i);
     return el;

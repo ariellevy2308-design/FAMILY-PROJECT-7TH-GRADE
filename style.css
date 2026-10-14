@@ -294,18 +294,21 @@ body {
   left: calc(var(--cm) * -1); width: calc(var(--pw) + var(--cm));
 }
 .leaf.cover .page-face::after { display: none; }
-/* הכריכה מבפנים: נייר שיש מעוטר (כמו בספרים ישנים) בתוך מסגרת פליז */
+/* הכריכה מבפנים: נייר ישן כמו העמודים (כתמים מ-agedPaper) בתוך מסגרת פליז */
 .leaf.cover .page-face.inside-cover {
   --rim: calc(var(--pw) * .035);
-  background: url("images/endpaper.jpg") center / cover, #6e4a30;
+  background-color: #e9d6ad;
   box-shadow:
     inset 0 0 0 1px #3b2c12,
     inset 0 0 0 var(--rim) #a88a4c,
     inset 0 0 0 calc(var(--rim) + 1px) #4a3816,
     inset 0 0 0 calc(var(--rim) + 2px) #c9ab6a,
-    inset 0 0 calc(var(--rim) * 1.6) calc(var(--rim) * .9) rgba(25,15,5,.5);
+    inset 0 0 calc(var(--rim) * 1.4) calc(var(--rim) * .6) rgba(110,65,15,.45);
 }
-.leaf.cover .page-face.inside-cover::after { display: none; }
+.leaf.cover .page-face.inside-cover::after {
+  display: block; content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5; mix-blend-mode: multiply;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .4 0 0 0 0 .2 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
 
 .gen-page { color: #1c1209; }
