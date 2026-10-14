@@ -245,20 +245,13 @@
       return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
     };
   }
+  // הנייר של כל עמוד = טקסטורה אמיתית מהתמונות של הספר (הטקסט נמחק ממנה, הכתמים נשארו)
+  const PAPER_COUNT = 12;
   function agedPaper(el, pageNo) {
     const r = rand(pageNo + 7);
-    const layers = [];
-    const stains = 3 + Math.floor(r() * 4);
-    for (let i = 0; i < stains; i++) {
-      const x = Math.round(r() * 100), y = Math.round(r() * 100);
-      const s = Math.round(7 + r() * 26), a = (0.07 + r() * 0.17).toFixed(2);
-      layers.push(`radial-gradient(circle at ${x}% ${y}%, rgba(150,95,30,${a}) 0, rgba(150,95,30,${(a / 2).toFixed(2)}) ${s * 0.6}%, transparent ${s}%)`);
-    }
-    for (let i = 0; i < 6; i++) { // נקודות "פוקסינג" קטנות
-      const x = Math.round(r() * 100), y = Math.round(r() * 100);
-      layers.push(`radial-gradient(circle at ${x}% ${y}%, rgba(130,80,30,.22) 0, transparent ${(0.6 + r()).toFixed(1)}%)`);
-    }
-    el.style.backgroundImage = layers.join(",") + ", var(--paper-base)";
+    const k = 1 + Math.floor(r() * PAPER_COUNT);
+    el.style.backgroundImage = `url("images/paper/paper-${k}.jpg")`;
+    el.style.backgroundSize = "100% 100%";
   }
 
   function bookForPage(p) {
@@ -321,50 +314,18 @@
     return el;
   }
 
-  // עובי ערימות הדפים משני הצדדים (בפיקסלים), לפי כמה דפים יש בכל צד
-  function stackDepths() {
-    const pw = parseFloat(getComputedStyle(root).getPropertyValue("--pw"));
-    const maxT = pw * 0.14, pagesLeaves = Math.max(1, n - 2);
-    const left = n - 1 - Math.max(current, 1), right = Math.max(0, Math.min(current - 1, n - 2));
-    return { L: maxT * left / pagesLeaves, R: maxT * right / pagesLeaves, left, right };
-  }
-
   function leafTransform(i) {
     const flipped = i < current;
-    const { L, R } = stackDepths();
     let z;
-    if (i === 0) z = flipped ? 0 : L + 8;            // הכריכה הקדמית: מעל הדפים כשהספר סגור
-    else if (i === n - 1) z = flipped ? R + 8 : 0;   // הכריכה האחורית
-    else z = (flipped ? R : L) + Math.max(1, 12 - (flipped ? current - 1 - i : i - current)) * 0.6;
-    return `translateZ(${z.toFixed(2)}px) rotateY(${flipped ? 180 : 0}deg)`;
-  }
-
-  // דף רגיל בנוי משני חצאים, כדי שיוכל להתכופף באמצע בזמן הדפדוף
-  function halfFace(i, side, offset) {
-    const half = document.createElement("div");
-    half.className = `half ${side}`;
-    const face = buildFace(i, side);
-    face.style.left = offset ? "calc(var(--pw) / -2)" : "0";
-    const shade = document.createElement("div");
-    shade.className = "shade";
-    half.append(face, shade);
-    return half;
+    if (i === 0 || i === n - 1) z = 0;
+    else z = Math.max(1, 12 - (flipped ? current - 1 - i : i - current)) * 0.6;
+    return `translateZ(${z}px) rotateY(${flipped ? 180 : 0}deg)`;
   }
 
   function createLeaf(i) {
     const leaf = document.createElement("div");
-    const isCover = i === 0 || i === n - 1;
-    leaf.className = "leaf" + (isCover ? " cover" : " page-leaf");
-    if (isCover) leaf.append(buildFace(i, "front"), buildFace(i, "back"));
-    else {
-      const inner = document.createElement("div"); // החצי שליד השדרה
-      inner.className = "seg seg-in";
-      inner.append(halfFace(i, "front", true), halfFace(i, "back", false));
-      const outer = document.createElement("div"); // החצי החיצוני — מתכופף
-      outer.className = "seg seg-out";
-      outer.append(halfFace(i, "front", false), halfFace(i, "back", true));
-      leaf.append(inner, outer);
-    }
+    leaf.className = "leaf" + (i === 0 || i === n - 1 ? " cover" : "");
+    leaf.append(buildFace(i, "front"), buildFace(i, "back"));
     leaf.style.transition = "none";
     leaf.style.transform = leafTransform(i);
     book.appendChild(leaf);
@@ -373,10 +334,13 @@
     leafEls.set(i, leaf);
   }
 
-  for (const st of [stackL, stackR]) st.innerHTML = '<div class="st-top"></div><div class="st-bottom"></div><div class="st-side"></div>';
-  function setStack(el, count, depth) {
-    el.style.setProperty("--t", depth.toFixed(2) + "px");
-    el.style.visibility = count > 0 ? "visible" : "hidden";
+  function setStack(el, count, dir) {
+    const T = Math.round(Math.min(1, count / Math.max(1, n - 2)) * 14);
+    const sh = [];
+    for (let j = 1; j <= T; j++) sh.push(`${dir * j * 0.45}px ${j * 0.55}px 0 ${j % 2 ? "#e6d6b4" : "#bfa77b"}`);
+    if (T) sh.push(`${dir * T * 0.45 + dir * 2}px ${T * 0.55 + 4}px 8px rgba(0,0,0,.35)`);
+    el.style.boxShadow = sh.join(",") || "none";
+    el.style.visibility = count > 0 && current > 0 && current < n ? "visible" : "hidden";
   }
 
   function render() {
@@ -391,9 +355,8 @@
       }
     });
 
-    const sd = stackDepths();
-    setStack(stackL, sd.left, sd.L);
-    setStack(stackR, sd.right, sd.R);
+    setStack(stackL, n - 1 - Math.max(current, 1), -1);
+    setStack(stackR, Math.min(current - 1, n - 2), 1);
 
     book.classList.toggle("closed-start", current === 0);
     book.classList.toggle("closed-end", current === n);
@@ -420,17 +383,8 @@
     render();
   }
 
-  function animateTurn(i, cls) {
-    const leaf = leafEls.get(i);
-    if (!leaf || !leaf.classList.contains("page-leaf")) return;
-    leaf.classList.remove("turn-fwd", "turn-back");
-    leaf.getBoundingClientRect();
-    leaf.classList.add(cls);
-    clearTimeout(leaf._t);
-    leaf._t = setTimeout(() => leaf.classList.remove(cls), 1050);
-  }
-  const next = () => { if (current < n) { current++; render(); animateTurn(current - 1, "turn-fwd"); } };
-  const prev = () => { if (current > 0) { current--; render(); animateTurn(current, "turn-back"); } };
+  const next = () => { if (current < n) { current++; render(); } };
+  const prev = () => { if (current > 0) { current--; render(); } };
 
   $("#next").addEventListener("click", next);
   $("#prev").addEventListener("click", prev);
