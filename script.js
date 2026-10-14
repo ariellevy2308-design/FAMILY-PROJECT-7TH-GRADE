@@ -252,6 +252,14 @@
       const s = Math.round(7 + r() * 26), a = (0.07 + r() * 0.17).toFixed(2);
       layers.push(`radial-gradient(circle at ${x}% ${y}%, rgba(150,95,30,${a}) 0, rgba(150,95,30,${(a / 2).toFixed(2)}) ${s * 0.6}%, transparent ${s}%)`);
     }
+    const edgeStains = 4 + Math.floor(r() * 4); // כתמים לאורך השוליים — שם הנייר נפגע הכי הרבה
+    for (let i = 0; i < edgeStains; i++) {
+      const side = r();
+      const x = side < 0.35 ? Math.round(r() * 9) : side < 0.7 ? Math.round(91 + r() * 9) : Math.round(r() * 100);
+      const y = side < 0.7 ? Math.round(r() * 100) : (r() < 0.5 ? Math.round(r() * 7) : Math.round(93 + r() * 7));
+      const s = Math.round(6 + r() * 14), a = (0.16 + r() * 0.2).toFixed(2);
+      layers.push(`radial-gradient(ellipse at ${x}% ${y}%, rgba(120,70,20,${a}) 0, rgba(130,80,25,${(a / 2.2).toFixed(2)}) ${s * 0.55}%, transparent ${s}%)`);
+    }
     for (let i = 0; i < 6; i++) { // נקודות "פוקסינג" קטנות
       const x = Math.round(r() * 100), y = Math.round(r() * 100);
       layers.push(`radial-gradient(circle at ${x}% ${y}%, rgba(130,80,30,.22) 0, transparent ${(0.6 + r()).toFixed(1)}%)`);
@@ -322,7 +330,8 @@
   function leafTransform(i) {
     const flipped = i < current;
     let z;
-    if (i === 0 || i === n - 1) z = 0;
+    if (i === 0) z = flipped ? 0 : 9;            // הכריכה הקדמית מעל הדפים כשהספר סגור
+    else if (i === n - 1) z = flipped ? 9 : 0;   // הכריכה האחורית
     else z = Math.max(1, 12 - (flipped ? current - 1 - i : i - current)) * 0.6;
     return `translateZ(${z}px) rotateY(${flipped ? 180 : 0}deg)`;
   }

@@ -285,7 +285,7 @@ body {
 }
 
 /* ============ ספר פתוח בתלת־ממד עם עמודים שנוצרים בקוד ============ */
-:root { --cm: calc(var(--pw) * .045); --paper-base: linear-gradient(90deg, #d4b47e, #dfc395 30%, #dbbd8c 70%, #cdaa72); }
+:root { --cm: calc(var(--pw) * .045); --paper-base: linear-gradient(90deg, #c8a46b, #d5b480 30%, #d1ae78 70%, #c09b5f); }
 .book-wrap { perspective: 1800px; padding: calc(var(--cm) + 6px) 0; }
 .book-tilt { transform-style: preserve-3d; transform: rotateX(16deg); }
 
@@ -297,7 +297,7 @@ body {
 /* הכריכה מבפנים: נייר ישן כמו העמודים (כתמים מ-agedPaper) בתוך מסגרת פליז */
 .leaf.cover .page-face.inside-cover {
   --rim: calc(var(--pw) * .035);
-  background-color: #d9bc89;
+  background-color: #cdab75;
   box-shadow:
     inset 0 0 0 1px #3b2c12,
     inset 0 0 0 var(--rim) #a88a4c,
@@ -312,7 +312,7 @@ body {
 
 
 .gen-page { color: #1c1209; }
-.gen-page.page-face { background-color: #d9bc89; }
+.gen-page.page-face { background-color: #cdab75; }
 /* גרעיניות של נייר ישן */
 .gen-page::before {
   content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5; mix-blend-mode: multiply;
