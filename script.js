@@ -385,14 +385,86 @@
     render();
   }
 
-  const next = () => { if (current < n) { current++; render(); } };
-  const prev = () => { if (current > 0) { current--; render(); } };
+  // קפיצה לספר אחר עם אנימציה: הרבה דפים מתהפכים במהירות אחד אחרי השני ("מניפה"),
+  // ובסוף הספר נוחת על העמוד החדש — במקום לקפוץ אליו בבת אחת.
+  let busy = false;
+  const RIFFLE_N = 12, RIFFLE_GAP = 70, RIFFLE_DUR = 700;
+
+  function plainFace(p, side) {
+    const el = document.createElement("div");
+    el.className = `page-face ${side}`;
+    if (p >= 1 && p <= totalPages) fillPage(el, p);
+    else { el.classList.add("gen-page"); agedPaper(el, 77777 + (p || 0)); }
+    return el;
+  }
+  function flyLeaf(frontP, backP, from, to) {
+    const leaf = document.createElement("div");
+    leaf.className = "leaf fly";
+    leaf.append(plainFace(frontP, "front"), plainFace(backP, "back"));
+    leaf.style.transition = "none";
+    leaf.style.transform = from;
+    book.appendChild(leaf);
+    return { leaf, to };
+  }
+  // עמוד "באמצע הדרך" — רק מספרים שכבר נטענו, כדי לא להוריד ספרים מיותרים
+  function midPage(j, oldP, newP) {
+    const total = 2 * RIFFLE_N; // j רץ על כל צדי הדפים (קדמי ואחורי)
+    const s = Math.round(oldP + (newP - oldP) * (j / total));
+    const b = bookForPage(s);
+    if (b && bookCache.has(b.file)) return s;
+    const ob = bookForPage(oldP), nb = bookForPage(newP);
+    if (j < RIFFLE_N && ob) return Math.min(ob.start + ob.count - 1, oldP + j);
+    if (nb) return Math.max(nb.start, newP - (total - j));
+    return s;
+  }
+
+  function riffleTo(target) {
+    target = Math.max(1, Math.min(n - 1, target));
+    if (busy || target === current) return;
+    if (current <= 0 || current >= n) { jumpTo(target); return; }
+    busy = true;
+    const fwd = target > current;
+    const oldR = 2 * (current - 1), oldL = oldR + 1;
+    const newR = 2 * (target - 1), newL = newR + 1;
+    jumpTo(target); // העמודים החדשים מתחת — הדפים המתעופפים מכסים אותם עד הסוף
+
+    const flys = [];
+    const z = (v) => `translateZ(${v}px)`;
+    // דף "קבוע" שמחזיק את העמוד הישן בצד השני עד שהדף הראשון נוחת עליו
+    if (fwd) flys.push(flyLeaf(null, oldR, `${z(29)} rotateY(180deg)`, null));
+    else flys.push(flyLeaf(oldL, null, `${z(29)} rotateY(0deg)`, null));
+    for (let j = 0; j < RIFFLE_N; j++) {
+      const a = midPage(j * 2, oldL, newR), bpg = midPage(j * 2 + 1, oldL, newR);
+      if (fwd) {
+        const front = j === 0 ? oldL : a, back = j === RIFFLE_N - 1 ? newR : bpg;
+        flys.push(flyLeaf(front, back, `${z(30 - j * 0.5)} rotateY(0deg)`, `${z(30 + j * 0.5)} rotateY(180deg)`));
+      } else {
+        const back = j === 0 ? oldR : a, front = j === RIFFLE_N - 1 ? newL : bpg;
+        flys.push(flyLeaf(front, back, `${z(30 - j * 0.5)} rotateY(180deg)`, `${z(30 + j * 0.5)} rotateY(0deg)`));
+      }
+    }
+    book.getBoundingClientRect();
+    let j = 0;
+    for (const f of flys) {
+      if (!f.to) continue;
+      f.leaf.style.transition = `transform ${RIFFLE_DUR}ms cubic-bezier(.45,.05,.35,1) ${j * RIFFLE_GAP}ms`;
+      f.leaf.style.transform = f.to;
+      j++;
+    }
+    setTimeout(() => {
+      flys.forEach((f) => f.leaf.remove());
+      busy = false;
+    }, (RIFFLE_N - 1) * RIFFLE_GAP + RIFFLE_DUR + 60);
+  }
+
+  const next = () => { if (!busy && current < n) { current++; render(); } };
+  const prev = () => { if (!busy && current > 0) { current--; render(); } };
 
   $("#next").addEventListener("click", next);
   $("#prev").addEventListener("click", prev);
   bookSelect.addEventListener("change", () => {
     const b = manifest.books.find((x) => x.file === bookSelect.value);
-    if (b) jumpTo(Math.floor(b.start / 2) + 1);
+    if (b) riffleTo(Math.floor(b.start / 2) + 1);
     bookSelect.blur(); // כדי שהחיצים במקלדת ידפדפו ולא יחליפו ספר
   });
 
