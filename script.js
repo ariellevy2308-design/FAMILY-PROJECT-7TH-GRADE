@@ -514,6 +514,16 @@
     textBox.appendChild(p);
   });
   $("#creator-name").textContent = cfg.creatorName;
+  (cfg.creatorHeader || []).forEach((line) => {
+    const d = document.createElement("div");
+    d.textContent = line;
+    $("#creator-meta").appendChild(d);
+  });
+  if (cfg.creatorImage) {
+    const img = $("#creator-img");
+    img.src = cfg.creatorImage;
+    img.hidden = false;
+  }
 
   let lastFocus = null;
   function openModal() {
