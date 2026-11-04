@@ -6,7 +6,7 @@
 // ============================================================
 
 const BOOK_CONFIG = {
-  title: "ספר התנ״ך של סבא שלי",
+  title: "הסידור של סבא גדעון",
 
   // תמונות החוץ של הספר (לתצוגת ה-3D)
   outside: {
@@ -21,7 +21,7 @@ const BOOK_CONFIG = {
   insideFront: null,
   insideBack: null,
 
-  // עמודי הספר נוצרים אוטומטית מטקסט התנ"ך (תיקייה data/, נבנית ע"י tools/build_text.py)
+  // עמודי הסידור נוצרים אוטומטית (תיקייה data/, נבנית ע"י tools/build_siddur.py)
 
   // "דבר היוצר"
   creatorHeader: [

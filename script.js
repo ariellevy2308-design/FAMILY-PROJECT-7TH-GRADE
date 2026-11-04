@@ -34,9 +34,9 @@
 
   const coverArt = () => `
     <div class="cover-art">
-      <div class="small">תורה · נביאים · כתובים</div>
+      <div class="small">סדור תפלה</div>
       <div class="ornament"></div>
-      <div class="big">תנ״ך</div>
+      <div class="big">סידור</div>
       <div class="ornament"></div>
     </div>`;
 
@@ -219,6 +219,7 @@
   const leafEls = new Map();
   const bookCache = new Map();
   const WINDOW = 3;
+  const DATA_VER = "siddur-2"; // לשנות כשבונים מחדש את data/ — כדי שהדפדפן לא ישתמש בגרסה ישנה
 
   const ones = "אבגדהוזחט", tens = "יכלמנסעפצ", hundreds = "קרשת";
   function hebNum(num) {
@@ -272,7 +273,7 @@
   }
   function loadBook(b) {
     if (!bookCache.has(b.file)) {
-      bookCache.set(b.file, fetch("data/" + b.file).then((r) => r.json()));
+      bookCache.set(b.file, fetch("data/" + b.file + "?v=" + DATA_VER).then((r) => r.json()));
     }
     return bookCache.get(b.file);
   }
@@ -290,10 +291,10 @@
       el.classList.add("title-page");
       body.innerHTML = `
         <div class="tp-frame">
-          <div class="tp-small">סֵפֶר</div>
-          <div class="tp-big">תּוֹרָה<br>נְבִיאִים<br>וּכְתוּבִים</div>
+          <div class="tp-small">סִדּוּר</div>
+          <div class="tp-big">תְּפִלָּה<br>לְכָל<br>הַשָּׁנָה</div>
           <div class="orn"></div>
-          <div class="tp-small">מְדֻיָּק הֵיטֵב</div>
+          <div class="tp-small">כְּמִנְהַג עֲדוֹת הַמִּזְרָח</div>
         </div>`;
       return;
     }
@@ -301,20 +302,32 @@
     if (!b) return; // עמוד ריק בסוף
     head.innerHTML = `<span class="pnum">${hebNum(p)}</span><span class="rh">${b.he}</span>`;
     loadBook(b).then((pages) => {
-      const items = pages[p - b.start] || [];
-      let html = "", open = false;
-      const openP = () => { if (!open) { html += "<p>"; open = true; } };
-      const closeP = () => { if (open) { html += "</p>"; open = false; } };
-      for (const it of items) {
-        if (it[0] === "t") { closeP(); html += `<div class="book-title"><div class="orn"></div><h3>סֵפֶר ${it[1]}</h3><div class="orn"></div></div>`; }
-        else if (it[0] === "c") { closeP(); html += `<div class="chap">פרק ${it[1]}</div>`; }
-        else if (it[0] === "v") { openP(); html += `<span class="vn">${it[1]}</span>${it[2]} `; }
-        else { openP(); html += `${it[1]} `; }
-      }
-      closeP();
-      body.innerHTML = html;
+      body.innerHTML = pageHTML(pages[p - b.start]);
+      // כותרת העמוד = שם התפילה שבעמוד (כמו בסידור המקורי)
+      const pg = pages[p - b.start];
+      if (pg && pg.h) head.querySelector(".rh").textContent = pg.h;
     });
   }
+
+  // HTML של עמוד מתוך הנתונים: t = כותרת חלק, c = שם תפילה, p = פסקה, x = המשך פסקה, i = הוראה
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  function pageHTML(pg) {
+    const items = (pg && pg.i) || [];
+    let html = "", open = false;
+    const openP = () => { if (!open) { html += "<p>"; open = true; } };
+    const closeP = () => { if (open) { html += "</p>"; open = false; } };
+    for (const [kind, text] of items) {
+      const t = esc(text);
+      if (kind === "t") { closeP(); html += `<div class="book-title"><div class="orn"></div><h3>${t}</h3><div class="orn"></div></div>`; }
+      else if (kind === "c") { closeP(); html += `<div class="chap">${t}</div>`; }
+      else if (kind === "i") { closeP(); html += `<div class="instr">${t}</div>`; }
+      else if (kind === "p") { closeP(); openP(); html += `${t} `; }
+      else { openP(); html += `${t} `; }
+    }
+    closeP();
+    return html;
+  }
+  window.__pageHTML = pageHTML; // לבדיקות
 
   function buildFace(i, side) {
     const el = document.createElement("div");
@@ -482,7 +495,7 @@
     e.clientX < r.left + r.width / 2 ? next() : prev();
   });
 
-  fetch("data/manifest.json").then((r) => r.json()).then((m) => {
+  fetch("data/manifest.json?v=" + DATA_VER).then((r) => r.json()).then((m) => {
     manifest = m;
     totalPages = m.pages + (m.pages % 2);
     n = totalPages / 2 + 2;

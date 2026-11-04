@@ -342,6 +342,7 @@ body {
   text-shadow: 0 0 .6px rgba(28,18,9,.55); /* דיו שנספג בנייר */
 }
 .page-body p { margin: 0; }
+.page-body .instr { font-size: .78em; line-height: 1.12; text-align: center; color: #4a3520; font-weight: 400; margin: .1em 0; }
 .page-body .vn { font-weight: 700; font-size: .7em; margin-inline-end: .2em; }
 .page-body .chap { text-align: center; font-weight: 900; font-size: 1.05em; margin: .15em 0 .2em; letter-spacing: .05em; }
 .page-body .book-title { text-align: center; margin: .3em 0 .6em; }

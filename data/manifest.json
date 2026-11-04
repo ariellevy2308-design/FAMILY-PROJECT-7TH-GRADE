@@ -1,240 +1,192 @@
 {
- "source": "Miqra according to the Masorah (CC-BY-SA), via Sefaria",
+ "source": "Siddur Edot HaMizrach (CC0), via Sefaria",
  "books": [
   {
-   "he": "בראשית",
+   "he": "סדר השכמת הבוקר",
    "file": "01.json",
    "start": 2,
-   "count": 169
+   "count": 7
   },
   {
-   "he": "שמות",
+   "he": "סדר תיקון חצות",
    "file": "02.json",
-   "start": 171,
-   "count": 137
+   "start": 9,
+   "count": 16
   },
   {
-   "he": "ויקרא",
+   "he": "שחרית לימי החול",
    "file": "03.json",
-   "start": 308,
-   "count": 96
+   "start": 25,
+   "count": 149
   },
   {
-   "he": "במדבר",
+   "he": "תוספות לשחרית",
    "file": "04.json",
-   "start": 404,
-   "count": 137
-  },
-  {
-   "he": "דברים",
-   "file": "05.json",
-   "start": 541,
-   "count": 118
-  },
-  {
-   "he": "יהושע",
-   "file": "06.json",
-   "start": 659,
-   "count": 84
-  },
-  {
-   "he": "שופטים",
-   "file": "07.json",
-   "start": 743,
-   "count": 83
-  },
-  {
-   "he": "שמואל א",
-   "file": "08.json",
-   "start": 826,
-   "count": 110
-  },
-  {
-   "he": "שמואל ב",
-   "file": "09.json",
-   "start": 936,
-   "count": 91
-  },
-  {
-   "he": "מלכים א",
-   "file": "10.json",
-   "start": 1027,
-   "count": 107
-  },
-  {
-   "he": "מלכים ב",
-   "file": "11.json",
-   "start": 1134,
-   "count": 101
-  },
-  {
-   "he": "ישעיהו",
-   "file": "12.json",
-   "start": 1235,
-   "count": 148
-  },
-  {
-   "he": "ירמיהו",
-   "file": "13.json",
-   "start": 1383,
-   "count": 181
-  },
-  {
-   "he": "יחזקאל",
-   "file": "14.json",
-   "start": 1564,
-   "count": 160
-  },
-  {
-   "he": "הושע",
-   "file": "15.json",
-   "start": 1724,
-   "count": 22
-  },
-  {
-   "he": "יואל",
-   "file": "16.json",
-   "start": 1746,
-   "count": 9
-  },
-  {
-   "he": "עמוס",
-   "file": "17.json",
-   "start": 1755,
+   "start": 174,
    "count": 18
   },
   {
-   "he": "עובדיה",
-   "file": "18.json",
-   "start": 1773,
-   "count": 3
+   "he": "מנחה לימי החול",
+   "file": "05.json",
+   "start": 192,
+   "count": 43
   },
   {
-   "he": "יונה",
-   "file": "19.json",
-   "start": 1776,
-   "count": 7
+   "he": "ערבית לימי החול",
+   "file": "06.json",
+   "start": 235,
+   "count": 36
   },
   {
-   "he": "מיכה",
-   "file": "20.json",
-   "start": 1783,
-   "count": 13
+   "he": "ספירת העומר",
+   "file": "07.json",
+   "start": 271,
+   "count": 19
   },
   {
-   "he": "נחום",
-   "file": "21.json",
-   "start": 1796,
-   "count": 6
-  },
-  {
-   "he": "חבקוק",
-   "file": "22.json",
-   "start": 1802,
-   "count": 7
-  },
-  {
-   "he": "צפניה",
-   "file": "23.json",
-   "start": 1809,
-   "count": 7
-  },
-  {
-   "he": "חגי",
-   "file": "24.json",
-   "start": 1816,
-   "count": 6
-  },
-  {
-   "he": "זכריה",
-   "file": "25.json",
-   "start": 1822,
-   "count": 28
-  },
-  {
-   "he": "מלאכי",
-   "file": "26.json",
-   "start": 1850,
+   "he": "ברכת הלבנה",
+   "file": "08.json",
+   "start": 290,
    "count": 8
   },
   {
-   "he": "תהלים",
-   "file": "27.json",
-   "start": 1858,
-   "count": 190
+   "he": "קריאת שמע שעל המיטה",
+   "file": "09.json",
+   "start": 298,
+   "count": 9
   },
   {
-   "he": "משלי",
-   "file": "28.json",
-   "start": 2048,
-   "count": 63
-  },
-  {
-   "he": "איוב",
-   "file": "29.json",
-   "start": 2111,
-   "count": 76
+   "he": "סדר הדלקת נרות שבת",
+   "file": "10.json",
+   "start": 307,
+   "count": 3
   },
   {
    "he": "שיר השירים",
-   "file": "30.json",
-   "start": 2187,
-   "count": 12
+   "file": "11.json",
+   "start": 310,
+   "count": 13
   },
   {
-   "he": "רות",
-   "file": "31.json",
-   "start": 2199,
-   "count": 12
-  },
-  {
-   "he": "איכה",
-   "file": "32.json",
-   "start": 2211,
+   "he": "קבלת שבת",
+   "file": "12.json",
+   "start": 323,
    "count": 14
   },
   {
-   "he": "קהלת",
-   "file": "33.json",
-   "start": 2225,
+   "he": "ערבית של שבת",
+   "file": "13.json",
+   "start": 337,
    "count": 25
   },
   {
-   "he": "אסתר",
-   "file": "34.json",
-   "start": 2250,
-   "count": 27
+   "he": "סדר ליל שבת",
+   "file": "14.json",
+   "start": 362,
+   "count": 47
   },
   {
-   "he": "דניאל",
-   "file": "35.json",
-   "start": 2277,
-   "count": 53
+   "he": "ברכת המזון",
+   "file": "15.json",
+   "start": 409,
+   "count": 15
   },
   {
-   "he": "עזרא",
-   "file": "36.json",
-   "start": 2330,
-   "count": 35
+   "he": "ברכת מעין שלוש",
+   "file": "16.json",
+   "start": 424,
+   "count": 3
   },
   {
-   "he": "נחמיה",
-   "file": "37.json",
-   "start": 2365,
-   "count": 48
+   "he": "ברכות הנהנין",
+   "file": "17.json",
+   "start": 427,
+   "count": 4
   },
   {
-   "he": "דברי הימים א",
-   "file": "38.json",
-   "start": 2413,
-   "count": 97
+   "he": "שחרית של שבת",
+   "file": "18.json",
+   "start": 431,
+   "count": 78
   },
   {
-   "he": "דברי הימים ב",
-   "file": "39.json",
-   "start": 2510,
-   "count": 116
+   "he": "מוסף של שבת",
+   "file": "19.json",
+   "start": 509,
+   "count": 28
+  },
+  {
+   "he": "סדר סעודה שניה",
+   "file": "20.json",
+   "start": 537,
+   "count": 13
+  },
+  {
+   "he": "מנחה של שבת",
+   "file": "21.json",
+   "start": 550,
+   "count": 31
+  },
+  {
+   "he": "סעודה שלישית",
+   "file": "22.json",
+   "start": 581,
+   "count": 8
+  },
+  {
+   "he": "מוצאי שבת",
+   "file": "23.json",
+   "start": 589,
+   "count": 23
+  },
+  {
+   "he": "סדר ראש חודש",
+   "file": "24.json",
+   "start": 612,
+   "count": 51
+  },
+  {
+   "he": "תפילה לשלש רגלים",
+   "file": "25.json",
+   "start": 663,
+   "count": 93
+  },
+  {
+   "he": "חנוכה",
+   "file": "26.json",
+   "start": 756,
+   "count": 19
+  },
+  {
+   "he": "פורים",
+   "file": "27.json",
+   "start": 775,
+   "count": 22
+  },
+  {
+   "he": "חודש ניסן",
+   "file": "28.json",
+   "start": 797,
+   "count": 62
+  },
+  {
+   "he": "ברכות ותפילות שונות",
+   "file": "29.json",
+   "start": 859,
+   "count": 24
+  },
+  {
+   "he": "תעניות ואבילות",
+   "file": "30.json",
+   "start": 883,
+   "count": 87
+  },
+  {
+   "he": "משניות לשבת",
+   "file": "31.json",
+   "start": 970,
+   "count": 91
   }
  ],
- "pages": 2625
+ "pages": 1060
 }
